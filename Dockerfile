@@ -1,4 +1,4 @@
-FROM python:3.10-alpine
+FROM python:3.11-alpine
 
 COPY . /user_service
 EXPOSE 8000
@@ -8,4 +8,4 @@ RUN apk add build-base
 WORKDIR /user_service
 RUN pip3 install -r requirements.txt
 WORKDIR /user_service/users_microservice
-CMD ["python","manage.py","runserver"]
+CMD ["python","manage.py","runserver","0.0.0.0:8000"]
