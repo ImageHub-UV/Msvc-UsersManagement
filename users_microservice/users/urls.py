@@ -7,6 +7,6 @@ router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
 
 urlpatterns = [
-    path('get/<id>', UserViewSet.as_view(),name='user'),
+    path('do/<id>', UserViewSet.as_view(),name='user'),
     path('docs/', include_docs_urls(title='Users API')),
 ]

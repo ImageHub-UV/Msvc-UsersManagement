@@ -16,4 +16,18 @@ class UserViewSet(APIView):
                 return Response(serializer_data.data,status=status.HTTP_200_OK)
             except User.DoesNotExist:
                 return Response(status=status.HTTP_404_NOT_FOUND)
+            
+    def delete(self,request,id):
+        with transaction.atomic():           
+            try:
+                user = User.objects.get(id=id)
+                
+                if(not user.is_active):
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+                
+                user.is_active = False
+                user.save()
+                return Response(status=status.HTTP_200_OK)
+            except User.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
                 
