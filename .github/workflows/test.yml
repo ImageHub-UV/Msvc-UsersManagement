@@ -10,11 +10,11 @@ jobs:
     build:
       runs-on: ubuntu-latest
       env: 
-        SECRET_KEY: ${{ secrets.DJANGO_APP_APISECRET }}
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
       
       steps:
       - name: Verify key
-        run: echo "The key value is ${{ secrets.DJANGO_APP_APISECRET }}"
+        run: echo "The key value is ${{ secrets.SECRET_KEY }}"
       - uses: actions/checkout@v3
       - name: Set up Python 3.11
         uses: actions/setup-python@v3
