@@ -18,6 +18,11 @@ class Utils():
         user.is_active = True
         user.save()
 
+    def get_token(self, client, username, password):
+        return client.post('/auth/jwt/create/', {
+            "username":username,
+            "password":password
+        })
 
 class TestUserMsvc(TestCase):
     def setUpTestData():
@@ -82,4 +87,25 @@ class TestUserMsvc(TestCase):
         response = c.delete('/user/do/10')
         assert response.status_code == 404
         
+    def test_get_token(self):
+        c = Client()
+        utils = Utils()
+        
+        response = utils.get_token(c, "SamuelTrujillo10", "MandeSamuel2023")
+        assert response.status_code == 200
+        assert 'access' in response.data
+        assert 'refresh' in response.data
 
+    def test_get_token_user_not_found(self):
+        c = Client()
+        utils = Utils()
+        
+        response = utils.get_token(c, "SamuelTrujillo11", "MandeSamuel2023")
+        assert response.status_code == 401
+
+    def test_get_token_wrong_password(self):
+        c = Client()
+        utils = Utils()
+        
+        response = utils.get_token(c, "SamuelTrujillo10", "MandeSamuel2024")
+        assert response.status_code == 401
