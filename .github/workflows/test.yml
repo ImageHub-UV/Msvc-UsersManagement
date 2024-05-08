@@ -10,14 +10,11 @@ jobs:
     build:
       runs-on: ubuntu-latest
       env: 
-        SECRET_KEY: ${{ secrets.SECRET_KEY }}
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SECRET_KEY: ${{ secrets.DJANGO_APP_APIKEY }}
       
       steps:
       - name: Verify SK key
-        run: echo "The key value is ${{ secrets.SECRET_KEY }}"
-      - name: Verify SK key
-        run: echo "The GB key value is ${{ secrets.GH_TOKEN }}"
+        run: echo "The key value is ${{ secrets.DJANGO_APP_APIKEY }}"
       - uses: actions/checkout@v3
       - name: Set up Python 3.11
         uses: actions/setup-python@v3
