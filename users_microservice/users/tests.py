@@ -109,3 +109,102 @@ class TestUserMsvc(TestCase):
         
         response = utils.get_token(c, "SamuelTrujillo10", "MandeSamuel2024")
         assert response.status_code == 401
+
+    def test_get_token_inactive_user(self):
+        c = Client()
+        utils = Utils()
+        
+        response = utils.get_token(c, "MariaVargas10", "MandeMaria2023")
+        content = response.content.decode('utf-8')
+
+        assert response.status_code == 401
+        assert 'No active account found with the given credentials' in content
+
+    def test_verify_token(self):
+        c = APIClient()
+        utils = Utils()
+
+        token = utils.get_token(c, "SamuelTrujillo10", "MandeSamuel2023")
+        c.credentials(HTTP_AUTHORIZATION='JWT ' + token.data['access'])
+
+        response = c.post('/auth/jwt/verify/', {'token':token.data['access']})
+        assert response.status_code == 200
+
+    def test_verify_token_wrong_token(self):
+        c = APIClient()
+        utils = Utils()
+
+        token = utils.get_token(c, "SamuelTrujillo10", "MandeSamuel2023")
+
+        response = c.post('/auth/jwt/verify/', {'token':token.data['access']+'1'})
+        assert response.status_code == 401
+    
+    def test_verify_token_not_authenticated(self):
+        c = APIClient()
+        utils = Utils()
+
+        response = c.post('/auth/jwt/verify/', {'token':'token'})
+        assert response.status_code == 401
+
+    def test_refresh_token(self):
+        c = APIClient()
+        utils = Utils()
+
+        token = utils.get_token(c, "SamuelTrujillo10", "MandeSamuel2023")
+        c.credentials(HTTP_AUTHORIZATION='JWT ' + token.data['access'])
+
+        response = c.post('/auth/jwt/refresh/', {'refresh':token.data['refresh']})
+        assert response.status_code == 200
+        assert 'access' in response.data
+
+    def test_user_modification(self):
+        c = APIClient()
+        utils = Utils()
+
+        token = utils.get_token(c, "SamuelTrujillo10", "MandeSamuel2023")
+        c.credentials(HTTP_AUTHORIZATION='JWT ' + token.data['access'])
+
+        response = c.patch('/auth/users/me/', 
+                           {'first_name':'Samuelito', 'last_name':'Trujillito'})
+
+        u1 = User.objects.get(id=1)
+        assert u1.first_name == 'Samuelito'
+        assert u1.last_name == 'Trujillito'
+            
+    def test_user_modification_not_authenticated(self):
+        c = APIClient()
+        utils = Utils()
+
+        response = c.patch('/auth/users/me/', 
+                           {'first_name':'Samuelito', 'last_name':'Trujillito'})
+
+        assert response.status_code == 401
+
+    def test_user_modification_wrong_token(self):
+        c = APIClient()
+        utils = Utils()
+
+        token = utils.get_token(c, "SamuelTrujillo10", "MandeSamuel2023")
+        c.credentials(HTTP_AUTHORIZATION='JWT ' + token.data['access'] + '1')
+
+        response = c.patch('/auth/users/me/', 
+                           {'first_name':'Samuelito', 'last_name':'Trujillito'})
+
+        assert response.status_code == 401
+
+    def test_change_password(self):
+        c = APIClient()
+        utils = Utils()
+
+        token = utils.get_token(c, "SamuelTrujillo10", "MandeSamuel2023")
+        c.credentials(HTTP_AUTHORIZATION='JWT ' + token.data['access'])
+
+        response = c.post('/auth/users/set_password/', 
+                          {'new_password':'MandeSamuel2024', 're_new_password':'MandeSamuel2024', 'current_password':'MandeSamuel2023'})
+
+        token = utils.get_token(c, "SamuelTrujillo10", "MandeSamuel2024")
+
+        assert response.status_code == 204
+        assert 'access' in token.data
+
+
