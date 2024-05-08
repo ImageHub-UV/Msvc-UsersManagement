@@ -24,13 +24,12 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      - name: Change App Directory
-        run: |
-          cd users_microservice
       - name: Run App Tests
         run: |
+          cd users_microservice
           python manage.py test
       - name: Coverage report
         run: |
+          cd users_microservice
           coverage run manage.py test
           coverage report
