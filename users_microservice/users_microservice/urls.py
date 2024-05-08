@@ -19,15 +19,11 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 from rest_framework import routers  
 from rest_framework.documentation import include_docs_urls
-from .views import *
 
-router = routers.DefaultRouter()
-router.register(r'users', UserViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
-    path('user/<id>', UserViewSet.as_view(),name='user'),
-    path('docs/', include_docs_urls(title='Users API')),
+    path('user/', include('users.urls')),
 ]
