@@ -27,20 +27,27 @@ class TestUserMsvc(TestCase):
         utils.create_user(c, "santiagopaz85@yopmail.com", "Santiago", "Paz", "SantiagoPaz10", "MandeSantiago2023")
         utils.create_user(c, "mariavargas85@yopmail.com", "Maria", "Vargas", "MariaVargas10", "MandeMaria2023")
 
-        print(User.objects.all())
+        size = User.objects.all().count()
 
         assert response.status_code == 201
+        assert size == 5
 
     def test_get_users(self):
         c = Client()
         response = c.get('/user/get/1')
-
-        print(response)
 
         assert response.status_code == 200
         assert response.data['email'] == "samueltrujillo85@yopmail.com"
         assert response.data['first_name'] == "Samuel"
         assert response.data['last_name'] == "Trujillo"
         assert response.data['username'] == "SamuelTrujillo10"
+
+        response = c.get('/user/get/3')
+
+        assert response.status_code == 200
+        assert response.data['email'] == "saralopez85@yopmail.com"
+        assert response.data['first_name'] == "Sara"
+        assert response.data['last_name'] == "Lopez"
+        assert response.data['username'] == "SaraLopez10"
         
 
