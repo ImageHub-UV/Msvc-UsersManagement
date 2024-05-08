@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: user-msvc-pod
+  labels:
+    app: user-msvc
+spec:
+  containers:
+    - name: user-msvc-container
+      image: maumg03/user-msvc
+      ports:
+        - containerPort: 8000
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-msvc-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8000
+      protocol: TCP
+  selector:
+    app: user-msvc
