@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from .models import User
 from django.db import transaction
 from rest_framework import viewsets, status
 from rest_framework.response import Response
@@ -14,6 +14,20 @@ class UserViewSet(APIView):
                 user = User.objects.get(id=id)
                 serializer_data = UserSerializer(user)
                 return Response(serializer_data.data,status=status.HTTP_200_OK)
+            except User.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            
+    def delete(self,request,id):
+        with transaction.atomic():           
+            try:
+                user = User.objects.get(id=id)
+                
+                if(not user.is_active):
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+                
+                user.is_active = False
+                user.save()
+                return Response(status=status.HTTP_200_OK)
             except User.DoesNotExist:
                 return Response(status=status.HTTP_404_NOT_FOUND)
                 
